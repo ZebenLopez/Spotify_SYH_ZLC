@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ActividadEvaluativaSpotifyTheme {
                 Surface{
+                    Text(text = "Hello World!")
                 }
             }
         }
