@@ -205,10 +205,12 @@ class PantallaInicioViewModel : ViewModel() {
 
     fun CambiarAletorio(context: Context) {
         _modoAleatorio.value = !_modoAleatorio.value
+        _modoRepetir.value = false
     }
 
     fun CambiarRepetir(context: Context) {
         _modoRepetir.value = !_modoRepetir.value
+        _modoAleatorio.value = false
     }
 
     fun ReproducirCancionAleatoria(context: Context) {

@@ -73,9 +73,9 @@ fun PantallaInicio(navController: NavHostController) {
         Row (modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
             Text(modifier = Modifier.padding(start = 16.dp),
-                text = "${posicion / 1000}")
+                text = String.format("%02d:%02d", posicion / 60000, (posicion % 60000) / 1000))
             Text(modifier = Modifier.padding(end = 16.dp),
-                text = "${duracion / 1000}")
+                text = String.format("%02d:%02d", duracion / 60000, (duracion % 60000) / 1000))
         }
 
         Row {
