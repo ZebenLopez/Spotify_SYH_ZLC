@@ -8,6 +8,7 @@ import androidx.annotation.AnyRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.actividadevaluativaspotify.R
@@ -72,6 +73,18 @@ class PantallaInicioViewModel : ViewModel() {
     val _posicionSlider = MutableStateFlow(0f)
     val posicionSlider = _posicionSlider.asStateFlow()
 
+    //Cambiar el valor del boton play
+    private val _estaReproduciendo = MutableStateFlow(false)
+    val estaReproduciendo = _estaReproduciendo.asStateFlow()
+
+    //Cambiar el valor del boton aleatorio
+    private val _modoAleatorio = MutableStateFlow(false)
+    val modoAleatorio = _modoAleatorio.asStateFlow()
+
+    //Cambiar el valor del boton repetir
+    private val _modoRepetir = MutableStateFlow(false)
+    val modoRepetir = _modoRepetir.asStateFlow()
+
     fun crearExoPlayer(context: Context) {
         _exoPlayer.value = ExoPlayer.Builder(context).build()
         _exoPlayer.value!!.prepare()
@@ -86,7 +99,7 @@ class PantallaInicioViewModel : ViewModel() {
         val mediaItem = MediaItem.fromUri(obtenerRuta(context, R.raw.songone))
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
-        _exoPlayer.value!!.playWhenReady = true
+        _exoPlayer.value!!.playWhenReady = false
 
         _exoPlayer.value!!.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -100,6 +113,7 @@ class PantallaInicioViewModel : ViewModel() {
                             delay(1000)
                         }
                     }
+
                 } else if (playbackState == Player.STATE_BUFFERING) {
                     // El Player está cargando el archivo, preparando la reproducción.
                     // No está listo, pero está en ello.
@@ -108,6 +122,12 @@ class PantallaInicioViewModel : ViewModel() {
                     SiguienteCancion(context)
                 } else if (playbackState == Player.STATE_IDLE) {
                     // El player se ha creado, pero no se ha lanzado la operación prepared.
+                }
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                if (modoRepetir.value) {
+                    SiguienteCancion(context)
                 }
             }
         })
@@ -123,15 +143,21 @@ class PantallaInicioViewModel : ViewModel() {
         /* TODO: Si el reproductor esta sonando, lo pauso. Si no, lo reproduzco */
         if (!_exoPlayer.value!!.isPlaying) {
             _exoPlayer.value!!.play()
+            _estaReproduciendo.value = true
         } else {
             _exoPlayer.value!!.pause()
+            _estaReproduciendo.value = false
         }
     }
 
     fun SiguienteCancion(context: Context) {
+        _estaReproduciendo.value = true
 
-
-        if (indiceActual.value == cancionesIds.size - 1) {
+        if (modoAleatorio.value) {
+            ReproducirCancionAleatoria(context)
+        } else if (modoRepetir.value) {
+            // No avanza al siguiente ítem si está en modo repetir y es la última canción
+        } else if (indiceActual.value == cancionesIds.size - 1) {
             _indiceActual.value = 0
         } else {
             _indiceActual.value = (_indiceActual.value + 1) % cancionesIds.size
@@ -152,9 +178,11 @@ class PantallaInicioViewModel : ViewModel() {
     }
 
     fun AnteriorCancion(context: Context) {
+        _estaReproduciendo.value = true
 
-
-        if (indiceActual.value == 0) {
+        if (modoAleatorio.value) {
+            ReproducirCancionAleatoria(context)
+        } else if (indiceActual.value == 0) {
             _indiceActual.value = cancionesIds.size - 1
         } else {
             _indiceActual.value = (_indiceActual.value - 1) % cancionesIds.size
@@ -162,8 +190,6 @@ class PantallaInicioViewModel : ViewModel() {
 
         _nombreCancionActual.value = cancionesNombres[indiceActual.value]
         _imagenCancionActual.value = cancionesImagenes[indiceActual.value]
-
-
 
         _exoPlayer.value!!.stop()
         _exoPlayer.value!!.clearMediaItems()
@@ -177,12 +203,20 @@ class PantallaInicioViewModel : ViewModel() {
 
     }
 
+    fun CambiarAletorio(context: Context) {
+        _modoAleatorio.value = !_modoAleatorio.value
+    }
+
+    fun CambiarRepetir(context: Context) {
+        _modoRepetir.value = !_modoRepetir.value
+    }
+
     fun ReproducirCancionAleatoria(context: Context) {
+        _estaReproduciendo.value = true
 
         val numeroAleatorio = (0 until cancionesIds.size).random()
         _indiceActual.value = numeroAleatorio
         val idCanciónActual = cancionesIds[_indiceActual.value]
-
 
         // Crea un nuevo MediaItem con la canción seleccionada
         val mediaItem = MediaItem.fromUri(obtenerRuta(context, idCanciónActual))
@@ -190,8 +224,6 @@ class PantallaInicioViewModel : ViewModel() {
 
         _nombreCancionActual.value = cancionesNombres[indiceActual.value]
         _imagenCancionActual.value = cancionesImagenes[indiceActual.value]
-
-
 
         // Prepara el reproductor y activa el playWhenReady
         _exoPlayer.value!!.prepare()

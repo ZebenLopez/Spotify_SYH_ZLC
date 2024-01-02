@@ -1,19 +1,22 @@
 package com.example.actividadevaluativaspotify.models
 
-import android.graphics.drawable.Icon
-import androidx.collection.intFloatMapOf
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Autorenew
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
@@ -40,6 +43,9 @@ fun PantallaInicio(navController: NavHostController) {
     val duracion by exoPlayerViewModel.duracion.collectAsStateWithLifecycle()
     val posicion by exoPlayerViewModel.progreso.collectAsStateWithLifecycle()
     val reproductor by exoPlayerViewModel.exoPlayer.collectAsState()
+    val estaReproduciendo by exoPlayerViewModel.estaReproduciendo.collectAsState()
+    val reproduciendoAleatorio by exoPlayerViewModel.modoAleatorio.collectAsState()
+    val reproduciendoRepetir by exoPlayerViewModel.modoRepetir.collectAsState()
 
 
     /* TODO: Llamar a crearExoPlayer y hacerSonarMusica */
@@ -54,6 +60,7 @@ fun PantallaInicio(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("${exoPlayerViewModel.nombreCancionActual.value}")
+
         MostrarImagenCancion(imagenId = exoPlayerViewModel.imagenCancionActual.value)
 
         Slider(
@@ -63,26 +70,41 @@ fun PantallaInicio(navController: NavHostController) {
             onValueChangeFinished = { /*TODO*/ }
         )
 
-        Row (horizontalArrangement = Arrangement.SpaceEvenly){
-            Text("${posicion / 1000}")
-            Text("${duracion / 1000}")
+        Row (modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween){
+            Text(modifier = Modifier.padding(start = 16.dp),
+                text = "${posicion / 1000}")
+            Text(modifier = Modifier.padding(end = 16.dp),
+                text = "${duracion / 1000}")
         }
 
         Row {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.Repeat, contentDescription = "Repetir")
+            IconButton(onClick = { exoPlayerViewModel.CambiarRepetir(contexto) }) {
+                if (reproduciendoRepetir) {
+                    Icon(Icons.Filled.Refresh, contentDescription = "Repetir")
+                } else {
+                    Icon(Icons.Filled.Autorenew, contentDescription = "Repetir")
+                }
             }
             IconButton(onClick = { exoPlayerViewModel.AnteriorCancion(contexto) }) {
                 Icon(Icons.Filled.SkipPrevious, contentDescription = "Anterior")
             }
             IconButton(onClick = { exoPlayerViewModel.PausarOSeguirMusica() }) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = "Play")
+                if (estaReproduciendo) {
+                    Icon(Icons.Filled.Pause, contentDescription = "Pausar")
+                } else {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = "Reproducir")
+                }
             }
             IconButton(onClick = { exoPlayerViewModel.SiguienteCancion(contexto) }) {
                 Icon(Icons.Filled.SkipNext, contentDescription = "Siguiente")
             }
-            IconButton(onClick = { exoPlayerViewModel.ReproducirCancionAleatoria(contexto) }) {
-                Icon(Icons.Filled.Refresh, contentDescription = "Aleatorio")
+            IconButton(onClick = { exoPlayerViewModel.CambiarAletorio(contexto) }) {
+                if (reproduciendoAleatorio) {
+                    Icon(Icons.Filled.Shuffle, contentDescription = "Aleatorio")
+                } else {
+                    Icon(Icons.Filled.Repeat, contentDescription = "Aleatorio")
+                }
             }
         }
 
