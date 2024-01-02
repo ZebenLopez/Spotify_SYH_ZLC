@@ -63,19 +63,34 @@ fun PantallaInicio(navController: NavHostController) {
 
         MostrarImagenCancion(imagenId = exoPlayerViewModel.imagenCancionActual.value)
 
+//        Slider(
+//            value = posicion.toFloat(),
+//            onValueChange = { /*TODO*/ },
+//            valueRange = 0f..duracion.toFloat(),
+//            onValueChangeFinished = { /*TODO*/ }
+//        )
+
         Slider(
             value = posicion.toFloat(),
-            onValueChange = { /*TODO*/ },
+            onValueChange = { newValue ->
+                exoPlayerViewModel.exoPlayer.value!!.seekTo((newValue).toLong())
+            },
             valueRange = 0f..duracion.toFloat(),
             onValueChangeFinished = { /*TODO*/ }
         )
 
-        Row (modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween){
-            Text(modifier = Modifier.padding(start = 16.dp),
-                text = String.format("%02d:%02d", posicion / 60000, (posicion % 60000) / 1000))
-            Text(modifier = Modifier.padding(end = 16.dp),
-                text = String.format("%02d:%02d", duracion / 60000, (duracion % 60000) / 1000))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                modifier = Modifier.padding(start = 16.dp),
+                text = String.format("%02d:%02d", posicion / 60000, (posicion % 60000) / 1000)
+            )
+            Text(
+                modifier = Modifier.padding(end = 16.dp),
+                text = String.format("%02d:%02d", duracion / 60000, (duracion % 60000) / 1000)
+            )
         }
 
         Row {
