@@ -16,7 +16,7 @@ fun GrafoNavegacion(){
     NavHost(navController = navController, startDestination = Rutas.Inicio.ruta){
 
         composable(Rutas.Inicio.ruta){
-            PantallaInicio(navController = navController)
+            PantallaInicio()
         }
     }
 

@@ -28,18 +28,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.example.actividadevaluativaspotify.shared.PantallaInicioViewModel
+import com.example.actividadevaluativaspotify.shared.PantallaInicioViewModelDos
 
 @Composable
-fun PantallaInicio(navController: NavHostController) {
+@Preview
+fun PantallaInicio() {
     val contexto = LocalContext.current
 
     /* Variables de estado */
-    val exoPlayerViewModel: PantallaInicioViewModel = viewModel()
+    val exoPlayerViewModel: PantallaInicioViewModelDos = viewModel()
     val duracion by exoPlayerViewModel.duracion.collectAsStateWithLifecycle()
     val posicion by exoPlayerViewModel.progreso.collectAsStateWithLifecycle()
     val reproductor by exoPlayerViewModel.exoPlayer.collectAsState()
@@ -48,7 +49,6 @@ fun PantallaInicio(navController: NavHostController) {
     val reproduciendoRepetir by exoPlayerViewModel.modoRepetir.collectAsState()
 
 
-    /* TODO: Llamar a crearExoPlayer y hacerSonarMusica */
     if (reproductor == null) {
         exoPlayerViewModel.crearExoPlayer(contexto)
         exoPlayerViewModel.hacerSonarMusica(contexto)
@@ -62,13 +62,6 @@ fun PantallaInicio(navController: NavHostController) {
         Text("${exoPlayerViewModel.nombreCancionActual.value}")
 
         MostrarImagenCancion(imagenId = exoPlayerViewModel.imagenCancionActual.value)
-
-//        Slider(
-//            value = posicion.toFloat(),
-//            onValueChange = { /*TODO*/ },
-//            valueRange = 0f..duracion.toFloat(),
-//            onValueChangeFinished = { /*TODO*/ }
-//        )
 
         Slider(
             value = posicion.toFloat(),
@@ -128,10 +121,10 @@ fun PantallaInicio(navController: NavHostController) {
 
 @Composable
 fun MostrarImagenCancion(imagenId: Int) {
-    val tamañoImagen = 200.dp
+    val tamanoImagen = 200.dp
     Image(
         painter = painterResource(id = imagenId),
         contentDescription = "Imagen de la canción actual",
-        modifier = Modifier.size(tamañoImagen)
+        modifier = Modifier.size(tamanoImagen)
     )
 }
