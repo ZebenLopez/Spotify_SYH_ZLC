@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.actividadevaluativaspotify.models.PantallaInicio
+import com.example.actividadevaluativaspotify.models.ReproductorMusica
 import com.example.actividadevaluativaspotify.rutas.Rutas
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -16,7 +16,7 @@ fun GrafoNavegacion(){
     NavHost(navController = navController, startDestination = Rutas.Inicio.ruta){
 
         composable(Rutas.Inicio.ruta){
-            PantallaInicio()
+            ReproductorMusica()
         }
     }
 
