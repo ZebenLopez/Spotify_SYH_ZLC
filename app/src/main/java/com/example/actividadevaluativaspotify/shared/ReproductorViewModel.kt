@@ -22,14 +22,17 @@ import kotlinx.coroutines.launch
 class PantallaInicioViewModelDos : ViewModel() {
 
     val canciones = listOf(
-        R.raw.songone to "Bob Esponja - La canción" to R.drawable.bobesponja,
-        R.raw.songtwo to "Perro Salchicha - Falso Bad Bunny" to R.drawable.perrosalchicha,
-        R.raw.malviviendo_sfdk to "Malviviendo - SFDK" to R.drawable.malviviendo,
-        R.raw.sharif_apoloydafne to "Apolo y Dafne - Sharif" to R.drawable.apoloydafne,
-        R.raw.relsb_cruzcafune_ellegas_lomejore to "Lo Mejor de Mi - Cruz Cafuné" to R.drawable.lomejore
+        R.raw.songone to "Bob Esponja" to "Nickelodeon" to R.drawable.bobesponja,
+        R.raw.songtwo to "Perro Salchicha" to "Falso Bad Bunny" to R.drawable.perrosalchicha,
+        R.raw.malviviendo_sfdk to "Malviviendo" to "SFDK" to R.drawable.malviviendo,
+        R.raw.sharif_apoloydafne to "Apolo y Dafne" to "Sharif" to R.drawable.apoloydafne,
+        R.raw.relsb_cruzcafune_ellegas_lomejore to "Los Mejore" to "Cruz Cafuné" to R.drawable.lomejore
     )
 
     var cancionesAleatorias = canciones
+
+    private val _nombreAlbumActual = MutableStateFlow("")
+    val nombreAlbumActual = _nombreAlbumActual.asStateFlow()
 
     private val _nombreCancionActual = MutableStateFlow("")
     val nombreCancionActual = _nombreCancionActual.asStateFlow()
@@ -81,7 +84,8 @@ class PantallaInicioViewModelDos : ViewModel() {
 
 
     fun hacerSonarMusica(context: Context) {
-        _nombreCancionActual.value = canciones[indiceActual.value].first.second
+        _nombreAlbumActual.value = canciones[indiceActual.value].first.second
+        _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
         _imagenCancionActual.value = (canciones[indiceActual.value]).second
 
         val mediaItem = MediaItem.fromUri(obtenerRuta(context, R.raw.songone))
@@ -140,7 +144,7 @@ class PantallaInicioViewModelDos : ViewModel() {
 
     fun SiguienteCancion(context: Context) {
         _estaReproduciendo.value = true
-        println(modoAleatorio.value)
+
         if (modoAleatorio.value) {
             ReproducirCancionAleatoria(context)
         } else if (modoRepetir.value) {
@@ -152,14 +156,15 @@ class PantallaInicioViewModelDos : ViewModel() {
         }
 
         if(!modoAleatorio.value){
-            _nombreCancionActual.value = canciones[indiceActual.value].first.second
+            _nombreAlbumActual.value = canciones[indiceActual.value].first.second
+            _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
             _imagenCancionActual.value = canciones[indiceActual.value].second
 
             _exoPlayer.value!!.stop()
             _exoPlayer.value!!.clearMediaItems()
 
             val mediaItem =
-                MediaItem.fromUri(obtenerRuta(context, canciones[indiceActual.value].first.first))
+                MediaItem.fromUri(obtenerRuta(context, canciones[indiceActual.value].first.first.first))
             _exoPlayer.value!!.setMediaItem(mediaItem)
 
             _exoPlayer.value!!.prepare()
@@ -173,20 +178,23 @@ class PantallaInicioViewModelDos : ViewModel() {
 
         if (modoAleatorio.value) {
             ReproducirCancionAleatoria(context)
+        } else if (modoRepetir.value) {
+            // No avanza al siguiente ítem si está en modo repetir y es la última canción
         } else if (indiceActual.value == 0) {
-            _indiceActual.value = canciones[indiceActual.value].first.first - 1
+            _indiceActual.value = canciones.size - 1
         } else {
             _indiceActual.value = (_indiceActual.value - 1) % canciones.size
         }
 
-        _nombreCancionActual.value = canciones[indiceActual.value].first.second
+        _nombreAlbumActual.value = canciones[indiceActual.value].first.second
+        _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
         _imagenCancionActual.value = canciones[indiceActual.value].second
 
         _exoPlayer.value!!.stop()
         _exoPlayer.value!!.clearMediaItems()
 
         val mediaItem =
-            MediaItem.fromUri(obtenerRuta(context, canciones[indiceActual.value].first.first))
+            MediaItem.fromUri(obtenerRuta(context, canciones[indiceActual.value].first.first.first))
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         _exoPlayer.value!!.prepare()
@@ -217,7 +225,8 @@ class PantallaInicioViewModelDos : ViewModel() {
             _indiceActual.value = (_indiceActual.value + 1) % cancionesAleatorias.size
         }
 
-        _nombreCancionActual.value = cancionesAleatorias[indiceActual.value].first.second
+        _nombreAlbumActual.value = canciones[indiceActual.value].first.second
+        _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
         _imagenCancionActual.value = cancionesAleatorias[indiceActual.value].second
         println(nombreCancionActual)
 
@@ -225,7 +234,7 @@ class PantallaInicioViewModelDos : ViewModel() {
         _exoPlayer.value!!.clearMediaItems()
 
         val mediaItem =
-            MediaItem.fromUri(obtenerRuta(context, cancionesAleatorias[indiceActual.value].first.first))
+            MediaItem.fromUri(obtenerRuta(context, cancionesAleatorias[indiceActual.value].first.first.first))
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         // Prepara el reproductor y activa el playWhenReady
