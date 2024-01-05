@@ -65,8 +65,7 @@ fun BarraInferior( funcionNavegarReproductor: () -> Unit,
     }
 
     BottomAppBar(modifier = Modifier
-        .fillMaxWidth()
-        .border(2.dp, Color.White),
+        .fillMaxWidth(),
     containerColor = Color.DarkGray,) {
         Row {
             Box(modifier = Modifier
@@ -136,7 +135,6 @@ fun BarraSuperior(){
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.DarkGray)
-            .border(2.dp, Color.White)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
