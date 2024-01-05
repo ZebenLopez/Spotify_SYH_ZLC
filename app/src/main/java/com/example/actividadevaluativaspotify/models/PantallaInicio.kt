@@ -3,11 +3,9 @@ package com.example.actividadevaluativaspotify.models
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,18 +31,17 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.actividadevaluativaspotify.R
-import com.example.actividadevaluativaspotify.shared.PantallaInicioViewModelDos
+import com.example.actividadevaluativaspotify.shared.ScaffoldViewModel
 
 @Composable
-@Preview(showBackground = true)
-fun PantallaInicio() {
+fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
 
-    val exoPlayerViewModel: PantallaInicioViewModelDos = viewModel()
+    viewModelScaffold._mostrarBarraInferior.value = true
+    val exoPlayerViewModel: ScaffoldViewModel = viewModel()
     val estaReproduciendo by exoPlayerViewModel.estaReproduciendo.collectAsState()
 
     Column {
@@ -53,24 +50,24 @@ fun PantallaInicio() {
                 .background(Color(33, 33, 33))
                 .weight(9f),
         ) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .background(Color(18, 18, 18)), verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "",
-                )
-                Spacer(modifier = Modifier.width(20.dp))
-                Text(
-                    text = "SoundSculpt",
-                    fontSize = 30.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+//            Row(
+//                Modifier
+//                    .fillMaxWidth()
+//                    .height(70.dp)
+//                    .background(Color(18, 18, 18)), verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.logo),
+//                    contentDescription = "",
+//                )
+//                Spacer(modifier = Modifier.width(20.dp))
+//                Text(
+//                    text = "SoundSculpt",
+//                    fontSize = 30.sp,
+//                    color = Color.White,
+//                    fontWeight = FontWeight.Bold
+//                )
+//            }
             Spacer(modifier = Modifier.height(5.dp))
             Row {
                 Column {
@@ -103,51 +100,51 @@ fun PantallaInicio() {
             }
         }
 
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .weight(1f)
-                .background(Color(18, 18, 18)),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = R.drawable.apoloydafne),
-                    contentDescription = "",
-                )
-                Spacer(modifier = Modifier.width(20.dp))
-                Column {
-                    Text(
-                        text = "Apolo y Dafne",
-                        fontSize = 20.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(text = "Sharif", fontSize = 15.sp, color = Color.White)
-                }
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            IconButton(onClick = { exoPlayerViewModel.PausarOSeguirMusica() }) {
-                if (estaReproduciendo) {
-                    Icon(
-                        Icons.Filled.Pause,
-                        contentDescription = "Pausar",
-                        tint = Color.White,
-                        modifier = Modifier.size(35.dp)
-                    )
-                } else {
-                    Icon(
-                        Icons.Filled.PlayArrow,
-                        contentDescription = "Reproducir",
-                        tint = Color.White,
-                        modifier = Modifier.size(35.dp)
-                    )
-                }
-            }
-        }
+//        Row(
+//            Modifier
+//                .fillMaxWidth()
+//                .height(70.dp)
+//                .weight(1f)
+//                .background(Color(18, 18, 18)),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//
+//        ) {
+//            Row(verticalAlignment = Alignment.CenterVertically) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.apoloydafne),
+//                    contentDescription = "",
+//                )
+//                Spacer(modifier = Modifier.width(20.dp))
+//                Column {
+//                    Text(
+//                        text = "Apolo y Dafne",
+//                        fontSize = 20.sp,
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                    Text(text = "Sharif", fontSize = 15.sp, color = Color.White)
+//                }
+//            }
+//            Spacer(modifier = Modifier.width(20.dp))
+//            IconButton(onClick = { exoPlayerViewModel.PausarOSeguirMusica() }) {
+//                if (estaReproduciendo) {
+//                    Icon(
+//                        Icons.Filled.Pause,
+//                        contentDescription = "Pausar",
+//                        tint = Color.White,
+//                        modifier = Modifier.size(35.dp)
+//                    )
+//                } else {
+//                    Icon(
+//                        Icons.Filled.PlayArrow,
+//                        contentDescription = "Reproducir",
+//                        tint = Color.White,
+//                        modifier = Modifier.size(35.dp)
+//                    )
+//                }
+//            }
+//        }
 
     }
 

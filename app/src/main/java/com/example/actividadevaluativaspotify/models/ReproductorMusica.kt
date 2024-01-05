@@ -1,7 +1,6 @@
 package com.example.actividadevaluativaspotify.models
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PictureInPicture
+import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Repeat
@@ -39,23 +40,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.actividadevaluativaspotify.R
-import com.example.actividadevaluativaspotify.shared.PantallaInicioViewModelDos
+import com.example.actividadevaluativaspotify.shared.ScaffoldViewModel
 
 @Composable
-@Preview
-fun ReproductorMusica() {
+fun ReproductorMusica(viewModelScaffold: ScaffoldViewModel,
+                      funcionNavegarPlayer: () -> Unit,) {
     val contexto = LocalContext.current
 
     /* Variables de estado */
-    val exoPlayerViewModel: PantallaInicioViewModelDos = viewModel()
+    val exoPlayerViewModel: ScaffoldViewModel = viewModelScaffold
     val duracion by exoPlayerViewModel.duracion.collectAsStateWithLifecycle()
     val posicion by exoPlayerViewModel.progreso.collectAsStateWithLifecycle()
     val reproductor by exoPlayerViewModel.exoPlayer.collectAsState()
     val estaReproduciendo by exoPlayerViewModel.estaReproduciendo.collectAsState()
     val reproduciendoAleatorio by exoPlayerViewModel.modoAleatorio.collectAsState()
     val reproduciendoRepetir by exoPlayerViewModel.modoRepetir.collectAsState()
+    viewModelScaffold._mostrarBarraInferior.value = false
 
 
     if (reproductor == null) {
@@ -139,6 +140,9 @@ fun ReproductorMusica() {
                     } else {
                         Icon(Icons.Filled.Repeat, contentDescription = "Aleatorio", tint = Color.White)
                     }
+                }
+                IconButton(onClick = funcionNavegarPlayer) {
+                    Icon(Icons.Default.PictureInPictureAlt, contentDescription = "A reproductor", tint = Color.White)
                 }
             }
         }
