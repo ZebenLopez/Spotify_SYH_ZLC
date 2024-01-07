@@ -1,17 +1,20 @@
-package com.example.actividadevaluativaspotify.shared
 
+@file:OptIn(UnstableApi::class) package com.example.actividadevaluativaspotify.shared
 
 import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Resources
 import android.net.Uri
 import androidx.annotation.AnyRes
+import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.SimpleExoPlayer
 import com.example.actividadevaluativaspotify.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,13 +24,30 @@ import kotlinx.coroutines.launch
 
 class ScaffoldViewModel : ViewModel() {
 
-val canciones = listOf(
-    R.raw.songone to "Bob Esponja" to "Nickelodeon" to R.drawable.bobesponja,
-    R.raw.songtwo to "Perro Salchicha" to "Falso Bad Bunny" to R.drawable.perrosalchicha,
-    R.raw.malviviendo_sfdk to "Malviviendo" to "SFDK" to R.drawable.malviviendo,
-    R.raw.sharif_apoloydafne to "Apolo y Dafne" to "Sharif" to R.drawable.apoloydafne,
-    R.raw.relsb_cruzcafune_ellegas_lomejore to "Los Mejore" to "Cruz Cafuné" to R.drawable.lomejore
-)
+    var canciones = listOf(
+        Pair(
+            Pair(Pair(R.raw.songone, "Bob Esponja - La canción"), "Bob Esponja"),
+            R.drawable.bobesponja
+        ),
+        Pair(
+            Pair(Pair(R.raw.songtwo, "Perro Salchicha - Falso Bad Bunny"), "Perro Salchicha"),
+            R.drawable.perrosalchicha
+        ),
+        Pair(
+            Pair(Pair(R.raw.malviviendo_sfdk, "Malviviendo - SFDK"), "Malviviendo"),
+            R.drawable.malviviendo
+        ),
+        Pair(
+            Pair(Pair(R.raw.sharif_apoloydafne, "Apolo y Dafne - Sharif"), "Apolo y Dafne"),
+            R.drawable.apoloydafne
+        ),
+        Pair(
+            Pair(
+                Pair(R.raw.relsb_cruzcafune_ellegas_lomejore, "Lo Mejor de Mi - Cruz Cafuné"),
+                "Lo Mejor de Mi"
+            ), R.drawable.lomejore
+        )
+    )
 
     val _mostrarBarraInferior = MutableStateFlow(true)
     val mostrarBarraInferior = _mostrarBarraInferior.asStateFlow()
@@ -85,6 +105,49 @@ val canciones = listOf(
         _exoPlayer.value!!.playWhenReady = true
     }
 
+    fun cargarCanciones(
+        Context: Context,
+        canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
+    ) {
+        this.canciones = canciones;
+    }
+
+    fun playCancionSuelta(cacion: Pair<Pair<Pair<Int, String>, String>, Int>, context: Context) {
+        _nombreAlbumActual.value = cacion.first.second
+        _nombreCancionActual.value = cacion.first.first.second
+        _imagenCancionActual.value = cacion.second
+        val exoPlayerValue = _exoPlayer.value
+
+        if (exoPlayerValue != null) {
+
+            _exoPlayer.value!!.stop()
+            _exoPlayer.value!!.clearMediaItems()
+
+            val mediaItem =
+                MediaItem.fromUri(
+                    obtenerRuta(
+                        context,
+                        canciones[indiceActual.value].first.first.first
+                    )
+                )
+            _exoPlayer.value!!.setMediaItem(mediaItem)
+
+            _exoPlayer.value!!.prepare()
+            _exoPlayer.value!!.playWhenReady = true
+        } else {
+            _exoPlayer.value = SimpleExoPlayer.Builder(context).build()
+
+            val newExoPlayer = _exoPlayer.value
+            newExoPlayer?.stop()
+            newExoPlayer?.clearMediaItems()
+
+            val mediaItem = MediaItem.fromUri(obtenerRuta(context, cacion.first.first.first))
+            newExoPlayer?.setMediaItem(mediaItem)
+
+            newExoPlayer?.prepare()
+            newExoPlayer?.playWhenReady = true
+        }
+    }
 
     fun hacerSonarMusica(context: Context) {
         _nombreAlbumActual.value = canciones[indiceActual.value].first.second
@@ -158,7 +221,7 @@ val canciones = listOf(
             _indiceActual.value = (_indiceActual.value + 1) % canciones.size
         }
 
-        if(!modoAleatorio.value){
+        if (!modoAleatorio.value) {
             _nombreAlbumActual.value = canciones[indiceActual.value].first.second
             _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
             _imagenCancionActual.value = canciones[indiceActual.value].second
@@ -167,7 +230,12 @@ val canciones = listOf(
             _exoPlayer.value!!.clearMediaItems()
 
             val mediaItem =
-                MediaItem.fromUri(obtenerRuta(context, canciones[indiceActual.value].first.first.first))
+                MediaItem.fromUri(
+                    obtenerRuta(
+                        context,
+                        canciones[indiceActual.value].first.first.first
+                    )
+                )
             _exoPlayer.value!!.setMediaItem(mediaItem)
 
             _exoPlayer.value!!.prepare()
@@ -236,7 +304,12 @@ val canciones = listOf(
         _exoPlayer.value!!.clearMediaItems()
 
         val mediaItem =
-            MediaItem.fromUri(obtenerRuta(context, cancionesAleatorias[_indiceActual.value].first.first.first))
+            MediaItem.fromUri(
+                obtenerRuta(
+                    context,
+                    cancionesAleatorias[_indiceActual.value].first.first.first
+                )
+            )
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         // Prepara el reproductor y activa el playWhenReady

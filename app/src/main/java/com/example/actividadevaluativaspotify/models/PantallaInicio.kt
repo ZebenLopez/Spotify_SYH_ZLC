@@ -2,7 +2,6 @@ package com.example.actividadevaluativaspotify.models
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,13 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,12 +25,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.actividadevaluativaspotify.R
+import com.example.actividadevaluativaspotify.persistence.persistenceViewModel
 import com.example.actividadevaluativaspotify.shared.ScaffoldViewModel
 
 @Composable
@@ -43,6 +41,7 @@ fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
     viewModelScaffold._mostrarBarraInferior.value = true
     val exoPlayerViewModel: ScaffoldViewModel = viewModel()
     val estaReproduciendo by exoPlayerViewModel.estaReproduciendo.collectAsState()
+    val persistenceViewModel: persistenceViewModel = viewModel()
 
     Column {
         Column(
@@ -50,35 +49,13 @@ fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
                 .background(Color(33, 33, 33))
                 .weight(9f),
         ) {
-//            Row(
-//                Modifier
-//                    .fillMaxWidth()
-//                    .height(70.dp)
-//                    .background(Color(18, 18, 18)), verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.logo),
-//                    contentDescription = "",
-//                )
-//                Spacer(modifier = Modifier.width(20.dp))
-//                Text(
-//                    text = "SoundSculpt",
-//                    fontSize = 30.sp,
-//                    color = Color.White,
-//                    fontWeight = FontWeight.Bold
-//                )
-//            }
+
             Spacer(modifier = Modifier.height(5.dp))
-            Row {
-                Column {
-                    CardPlaylist()
-                    CardPlaylist()
-                    CardPlaylist()
-                }
-                Column {
-                    CardPlaylist()
-                    CardPlaylist()
-                    CardPlaylist()
+            LazyColumn(Modifier.height(200.dp)) {
+                persistenceViewModel.allsongs.forEach() {
+                    item {
+                        CardPlaylist(it)
+                    }
                 }
             }
             Text(
@@ -88,74 +65,21 @@ fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
                 modifier = Modifier.padding(10.dp),
                 fontWeight = FontWeight.Bold
             )
-            LazyRow(Modifier.padding(10.dp)) {
-                items(10) {
-                    cardsGrandes()
-                    cardsGrandes()
-                    cardsGrandes()
-                    cardsGrandes()
-                    cardsGrandes()
-                    cardsGrandes()
-                }
+            Row {
+                cardsGrandes(titulo = "Canciones guapardas", imagen = R.drawable.bbo)
+                cardsGrandes(titulo = "Canciones meme", imagen = R.drawable.bobesponja)
             }
         }
-
-//        Row(
-//            Modifier
-//                .fillMaxWidth()
-//                .height(70.dp)
-//                .weight(1f)
-//                .background(Color(18, 18, 18)),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
-//
-//        ) {
-//            Row(verticalAlignment = Alignment.CenterVertically) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.apoloydafne),
-//                    contentDescription = "",
-//                )
-//                Spacer(modifier = Modifier.width(20.dp))
-//                Column {
-//                    Text(
-//                        text = "Apolo y Dafne",
-//                        fontSize = 20.sp,
-//                        color = Color.White,
-//                        fontWeight = FontWeight.Bold
-//                    )
-//                    Text(text = "Sharif", fontSize = 15.sp, color = Color.White)
-//                }
-//            }
-//            Spacer(modifier = Modifier.width(20.dp))
-//            IconButton(onClick = { exoPlayerViewModel.PausarOSeguirMusica() }) {
-//                if (estaReproduciendo) {
-//                    Icon(
-//                        Icons.Filled.Pause,
-//                        contentDescription = "Pausar",
-//                        tint = Color.White,
-//                        modifier = Modifier.size(35.dp)
-//                    )
-//                } else {
-//                    Icon(
-//                        Icons.Filled.PlayArrow,
-//                        contentDescription = "Reproducir",
-//                        tint = Color.White,
-//                        modifier = Modifier.size(35.dp)
-//                    )
-//                }
-//            }
-//        }
 
     }
 
 }
 
 @Composable
-fun cardsGrandes() {
-
+fun cardsGrandes(titulo : String, imagen : Int) {
     Column(Modifier.padding(5.dp)) {
         Image(
-            painter = painterResource(id = R.drawable.malviviendo),
+            painter = painterResource(id = imagen),
             contentDescription = "",
             Modifier
                 .size(180.dp)
@@ -164,20 +88,24 @@ fun cardsGrandes() {
         )
         Spacer(modifier = Modifier.height(3.dp))
         Text(
-            text = "Buena Onda",
+            text = titulo,
             fontSize = 20.sp,
             color = Color.White,
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardPlaylist() {
+fun CardPlaylist(pair: Pair<Pair<Pair<Int, String>, String>, Int>) {
+    val exoPlayerViewModel: ScaffoldViewModel = viewModel()
+    val contexto = LocalContext.current
     Card(
         modifier = Modifier
             .height(80.dp)
-            .width(200.dp)
-            .padding(2.dp)
+            .fillMaxWidth()
+            .padding(4.dp),
+        onClick = { exoPlayerViewModel.playCancionSuelta(pair, contexto) },
     ) {
         Row(
             modifier = Modifier
@@ -186,7 +114,7 @@ fun CardPlaylist() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.lomejore),
+                painter = painterResource(id = pair.second),
                 contentDescription = "",
                 modifier = Modifier
                     .size(80.dp)
@@ -197,7 +125,7 @@ fun CardPlaylist() {
             )
             Spacer(modifier = Modifier.width(5.dp))
             Text(
-                text = "Playlist Wapa",
+                text = pair.first.first.second,
                 fontSize = 15.sp,
                 color = Color.White
             )
