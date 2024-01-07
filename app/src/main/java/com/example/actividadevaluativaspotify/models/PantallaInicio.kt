@@ -2,6 +2,7 @@ package com.example.actividadevaluativaspotify.models
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -54,7 +54,7 @@ fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
             LazyColumn(Modifier.height(200.dp)) {
                 persistenceViewModel.allsongs.forEach() {
                     item {
-                        CardPlaylist(it)
+                        CardPlaylist(it, viewModelScaffold)
                     }
                 }
             }
@@ -66,8 +66,8 @@ fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
                 fontWeight = FontWeight.Bold
             )
             Row {
-                cardsGrandes(titulo = "Canciones guapardas", imagen = R.drawable.bbo)
-                cardsGrandes(titulo = "Canciones meme", imagen = R.drawable.bobesponja)
+                cardsGrandes(titulo = "Canciones guapardas", imagen = R.drawable.bbo, list = persistenceViewModel.songs, viewModelScaffold)
+                cardsGrandes(titulo = "Canciones meme", imagen = R.drawable.bobesponja, list = persistenceViewModel.funnysongs, viewModelScaffold)
             }
         }
 
@@ -76,15 +76,27 @@ fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
 }
 
 @Composable
-fun cardsGrandes(titulo : String, imagen : Int) {
-    Column(Modifier.padding(5.dp)) {
+fun cardsGrandes(
+    titulo: String,
+    imagen: Int,
+    list: List<Pair<Pair<Pair<Int, String>, String>, Int>>? = null,
+    viewModelScaffold: ScaffoldViewModel
+) {
+    var contexto = LocalContext.current
+
+    Column(
+        Modifier
+            .padding(5.dp)
+            .clickable {
+                viewModelScaffold.cargarCanciones(contexto, list!!)
+            }) {
         Image(
             painter = painterResource(id = imagen),
             contentDescription = "",
             Modifier
                 .size(180.dp)
                 .clip(RectangleShape),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
         )
         Spacer(modifier = Modifier.height(3.dp))
         Text(
@@ -97,15 +109,14 @@ fun cardsGrandes(titulo : String, imagen : Int) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardPlaylist(pair: Pair<Pair<Pair<Int, String>, String>, Int>) {
-    val exoPlayerViewModel: ScaffoldViewModel = viewModel()
+fun CardPlaylist(cancion: Pair<Pair<Pair<Int, String>, String>, Int>, viewModelScaffold: ScaffoldViewModel) {
     val contexto = LocalContext.current
     Card(
         modifier = Modifier
             .height(80.dp)
             .fillMaxWidth()
             .padding(4.dp),
-        onClick = { exoPlayerViewModel.playCancionSuelta(pair, contexto) },
+        onClick = { viewModelScaffold.playCancionSuelta(cancion, contexto) },
     ) {
         Row(
             modifier = Modifier
@@ -114,7 +125,7 @@ fun CardPlaylist(pair: Pair<Pair<Pair<Int, String>, String>, Int>) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = pair.second),
+                painter = painterResource(id = cancion.second),
                 contentDescription = "",
                 modifier = Modifier
                     .size(80.dp)
@@ -125,7 +136,7 @@ fun CardPlaylist(pair: Pair<Pair<Pair<Int, String>, String>, Int>) {
             )
             Spacer(modifier = Modifier.width(5.dp))
             Text(
-                text = pair.first.first.second,
+                text = cancion.first.first.second,
                 fontSize = 15.sp,
                 color = Color.White
             )

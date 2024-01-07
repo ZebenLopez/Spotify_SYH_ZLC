@@ -58,7 +58,6 @@ fun ReproductorMusica(viewModelScaffold: ScaffoldViewModel,
     val reproduciendoRepetir by exoPlayerViewModel.modoRepetir.collectAsState()
     viewModelScaffold._mostrarBarraInferior.value = false
 
-
     if (reproductor == null) {
         exoPlayerViewModel.crearExoPlayer(contexto)
         exoPlayerViewModel.hacerSonarMusica(contexto)

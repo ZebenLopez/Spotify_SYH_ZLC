@@ -25,31 +25,27 @@ import kotlinx.coroutines.launch
 
 class ScaffoldViewModel : ViewModel() {
 
-    var canciones = listOf(
-        Pair(
-            Pair(Pair(R.raw.songone, "Bob Esponja - La canción"), "Bob Esponja"),
-            R.drawable.bobesponja
-        ), Pair(
-            Pair(Pair(R.raw.songtwo, "Perro Salchicha - Falso Bad Bunny"), "Perro Salchicha"),
-            R.drawable.perrosalchicha
-        ), Pair(
-            Pair(Pair(R.raw.malviviendo_sfdk, "Malviviendo - SFDK"), "Malviviendo"),
-            R.drawable.malviviendo
-        ), Pair(
-            Pair(Pair(R.raw.sharif_apoloydafne, "Apolo y Dafne - Sharif"), "Apolo y Dafne"),
-            R.drawable.apoloydafne
-        ), Pair(
-            Pair(
-                Pair(R.raw.relsb_cruzcafune_ellegas_lomejore, "Lo Mejor de Mi - Cruz Cafuné"),
-                "Lo Mejor de Mi"
-            ), R.drawable.lomejore
+    private val _canciones = MutableStateFlow(initializarLista())
+    val canciones = _canciones.asStateFlow()
+
+    private fun initializarLista(): List<Pair<Pair<Pair<Int, String>, String>, Int>> {
+        return listOf(
+            R.raw.acelerao_luck to "Acelerao" to "Luck" to R.drawable.acelerao,
+            R.raw.birrahumoyreflexiones_hardgz to "Birra, Humo y Reflexiones" to "Hard GZ" to R.drawable.kaosnomada,
+            R.raw.cerocumplidos_luck to "Cero Cumplidos" to "Luck" to R.drawable._cumplidos,
+            R.raw.ojodehalcon_hoke to "Ojo de Halcón" to "Hoke" to R.drawable.bbo,
+            R.raw.malviviendo_sfdk to "Malviviendo" to "SFDK" to R.drawable.malviviendo,
+            R.raw.sharif_apoloydafne to "Apolo y Dafne" to "Sharif" to R.drawable.apoloydafne,
+            R.raw.songtwo to "Perro Salchicha" to "Falso Bad Bunny" to R.drawable.perrosalchicha,
+            R.raw.songone to "Bob Esponja" to "Nickelodeon" to R.drawable.bobesponja
         )
-    )
+    }
+
+    var cancionesAleatorias = _canciones.value.shuffled()
 
     val _mostrarBarraInferior = MutableStateFlow(true)
-    val mostrarBarraInferior = _mostrarBarraInferior.asStateFlow()
 
-    var cancionesAleatorias = canciones
+    val mostrarBarraInferior = _mostrarBarraInferior.asStateFlow()
 
     private val _nombreAlbumActual = MutableStateFlow("")
     val nombreAlbumActual = _nombreAlbumActual.asStateFlow()
@@ -69,7 +65,7 @@ class ScaffoldViewModel : ViewModel() {
     val exoPlayer = _exoPlayer.asStateFlow()
 
     // La cancion actual que está sonando
-    private val _actual = MutableStateFlow(R.raw.songone)
+    private val _actual = MutableStateFlow(_canciones.value[0])
     val actual = _actual.asStateFlow()
 
     // La duración de la canción
@@ -102,10 +98,38 @@ class ScaffoldViewModel : ViewModel() {
         _exoPlayer.value!!.playWhenReady = true
     }
 
-    fun cargarCanciones(
-        Context: Context, canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
+    fun cargarCanciones( context: Context, canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
     ) {
-        this.canciones = canciones;
+
+        _canciones.value = canciones
+
+        _nombreAlbumActual.value = _canciones.value[indiceActual.value].first.second
+        _nombreCancionActual.value = _canciones.value[indiceActual.value].first.first.second
+        _imagenCancionActual.value = (_canciones.value[indiceActual.value]).second
+        _estaReproduciendo.value = true
+
+        if (_exoPlayer.value != null){
+            _exoPlayer.value!!.stop()
+            _exoPlayer.value!!.clearMediaItems()
+
+            val mediaItem = MediaItem.fromUri(obtenerRuta(context, _canciones.value[0].first.first.first))
+            _exoPlayer.value!!.setMediaItem(mediaItem)
+
+            _exoPlayer.value!!.prepare()
+            _exoPlayer.value!!.playWhenReady = true
+        }else{
+            crearExoPlayer(context)
+
+            val mediaItem = MediaItem.fromUri(obtenerRuta(context, _canciones.value[0].first.first.first))
+            _exoPlayer.value!!.setMediaItem(mediaItem)
+
+            _exoPlayer.value!!.prepare()
+            _exoPlayer.value!!.playWhenReady = true
+
+            println("No hay reproductor")
+        }
+
+
     }
 
     fun playCancionSuelta(cancion: Pair<Pair<Pair<Int, String>, String>, Int>, context: Context) {
@@ -141,11 +165,11 @@ class ScaffoldViewModel : ViewModel() {
     }
 
     fun hacerSonarMusica(context: Context) {
-        _nombreAlbumActual.value = canciones[indiceActual.value].first.second
-        _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
-        _imagenCancionActual.value = (canciones[indiceActual.value]).second
+        _nombreAlbumActual.value = _canciones.value[indiceActual.value].first.second
+        _nombreCancionActual.value = _canciones.value[indiceActual.value].first.first.second
+        _imagenCancionActual.value = (_canciones.value[indiceActual.value]).second
 
-        val mediaItem = MediaItem.fromUri(obtenerRuta(context, R.raw.songone))
+        val mediaItem = MediaItem.fromUri(obtenerRuta(context, _canciones.value[indiceActual.value].first.first.first))
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         _exoPlayer.value!!.playWhenReady = false
@@ -205,23 +229,23 @@ class ScaffoldViewModel : ViewModel() {
             ReproducirCancionAleatoria(context)
         } else if (modoRepetir.value) {
             // No avanza al siguiente ítem si está en modo repetir y es la última canción
-        } else if (indiceActual.value == canciones.size - 1) {
+        } else if (indiceActual.value == _canciones.value.size - 1) {
             _indiceActual.value = 0
         } else {
-            _indiceActual.value = (_indiceActual.value + 1) % canciones.size
+            _indiceActual.value = (_indiceActual.value + 1) % _canciones.value.size
         }
 
         if (!modoAleatorio.value) {
-            _nombreAlbumActual.value = canciones[indiceActual.value].first.second
-            _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
-            _imagenCancionActual.value = canciones[indiceActual.value].second
+            _nombreAlbumActual.value = _canciones.value[indiceActual.value].first.second
+            _nombreCancionActual.value = _canciones.value[indiceActual.value].first.first.second
+            _imagenCancionActual.value = _canciones.value[indiceActual.value].second
 
             _exoPlayer.value!!.stop()
             _exoPlayer.value!!.clearMediaItems()
 
             val mediaItem = MediaItem.fromUri(
                 obtenerRuta(
-                    context, canciones[indiceActual.value].first.first.first
+                    context, _canciones.value[indiceActual.value].first.first.first
                 )
             )
             _exoPlayer.value!!.setMediaItem(mediaItem)
@@ -240,20 +264,20 @@ class ScaffoldViewModel : ViewModel() {
         } else if (modoRepetir.value) {
             // No avanza al siguiente ítem si está en modo repetir y es la última canción
         } else if (indiceActual.value == 0) {
-            _indiceActual.value = canciones.size - 1
+            _indiceActual.value = _canciones.value.size - 1
         } else {
-            _indiceActual.value = (_indiceActual.value - 1) % canciones.size
+            _indiceActual.value = (_indiceActual.value - 1) % _canciones.value.size
         }
 
-        _nombreAlbumActual.value = canciones[indiceActual.value].first.second
-        _nombreCancionActual.value = canciones[indiceActual.value].first.first.second
-        _imagenCancionActual.value = canciones[indiceActual.value].second
+        _nombreAlbumActual.value = _canciones.value[indiceActual.value].first.second
+        _nombreCancionActual.value = _canciones.value[indiceActual.value].first.first.second
+        _imagenCancionActual.value = _canciones.value[indiceActual.value].second
 
         _exoPlayer.value!!.stop()
         _exoPlayer.value!!.clearMediaItems()
 
         val mediaItem =
-            MediaItem.fromUri(obtenerRuta(context, canciones[indiceActual.value].first.first.first))
+            MediaItem.fromUri(obtenerRuta(context, _canciones.value[indiceActual.value].first.first.first))
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         _exoPlayer.value!!.prepare()

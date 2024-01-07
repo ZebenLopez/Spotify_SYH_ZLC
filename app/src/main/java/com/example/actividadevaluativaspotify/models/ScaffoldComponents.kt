@@ -60,6 +60,7 @@ fun BarraInferior( funcionNavegarReproductor: () -> Unit,
     val nombreAlbumActual by exoPlayerViewModel.nombreAlbumActual.collectAsState()
 
     if (reproductor == null) {
+        println("Creando reproductor")
         exoPlayerViewModel.crearExoPlayer(contexto)
         exoPlayerViewModel.hacerSonarMusica(contexto)
     }
