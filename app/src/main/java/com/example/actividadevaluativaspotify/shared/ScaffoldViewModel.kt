@@ -1,5 +1,6 @@
+@file:OptIn(UnstableApi::class)
 
-@file:OptIn(UnstableApi::class) package com.example.actividadevaluativaspotify.shared
+package com.example.actividadevaluativaspotify.shared
 
 import android.content.ContentResolver
 import android.content.Context
@@ -28,20 +29,16 @@ class ScaffoldViewModel : ViewModel() {
         Pair(
             Pair(Pair(R.raw.songone, "Bob Esponja - La canción"), "Bob Esponja"),
             R.drawable.bobesponja
-        ),
-        Pair(
+        ), Pair(
             Pair(Pair(R.raw.songtwo, "Perro Salchicha - Falso Bad Bunny"), "Perro Salchicha"),
             R.drawable.perrosalchicha
-        ),
-        Pair(
+        ), Pair(
             Pair(Pair(R.raw.malviviendo_sfdk, "Malviviendo - SFDK"), "Malviviendo"),
             R.drawable.malviviendo
-        ),
-        Pair(
+        ), Pair(
             Pair(Pair(R.raw.sharif_apoloydafne, "Apolo y Dafne - Sharif"), "Apolo y Dafne"),
             R.drawable.apoloydafne
-        ),
-        Pair(
+        ), Pair(
             Pair(
                 Pair(R.raw.relsb_cruzcafune_ellegas_lomejore, "Lo Mejor de Mi - Cruz Cafuné"),
                 "Lo Mejor de Mi"
@@ -106,16 +103,16 @@ class ScaffoldViewModel : ViewModel() {
     }
 
     fun cargarCanciones(
-        Context: Context,
-        canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
+        Context: Context, canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
     ) {
         this.canciones = canciones;
     }
 
-    fun playCancionSuelta(cacion: Pair<Pair<Pair<Int, String>, String>, Int>, context: Context) {
-        _nombreAlbumActual.value = cacion.first.second
-        _nombreCancionActual.value = cacion.first.first.second
-        _imagenCancionActual.value = cacion.second
+    fun playCancionSuelta(cancion: Pair<Pair<Pair<Int, String>, String>, Int>, context: Context) {
+        _nombreAlbumActual.value = cancion.first.second
+        _nombreCancionActual.value = cancion.first.first.second
+        _imagenCancionActual.value = cancion.second
+
         val exoPlayerValue = _exoPlayer.value
 
         if (exoPlayerValue != null) {
@@ -123,13 +120,7 @@ class ScaffoldViewModel : ViewModel() {
             _exoPlayer.value!!.stop()
             _exoPlayer.value!!.clearMediaItems()
 
-            val mediaItem =
-                MediaItem.fromUri(
-                    obtenerRuta(
-                        context,
-                        canciones[indiceActual.value].first.first.first
-                    )
-                )
+            val mediaItem = MediaItem.fromUri(obtenerRuta(context, cancion.first.first.first))
             _exoPlayer.value!!.setMediaItem(mediaItem)
 
             _exoPlayer.value!!.prepare()
@@ -141,7 +132,7 @@ class ScaffoldViewModel : ViewModel() {
             newExoPlayer?.stop()
             newExoPlayer?.clearMediaItems()
 
-            val mediaItem = MediaItem.fromUri(obtenerRuta(context, cacion.first.first.first))
+            val mediaItem = MediaItem.fromUri(obtenerRuta(context, cancion.first.first.first))
             newExoPlayer?.setMediaItem(mediaItem)
 
             newExoPlayer?.prepare()
@@ -197,8 +188,7 @@ class ScaffoldViewModel : ViewModel() {
         super.onCleared()
     }
 
-    fun PausarOSeguirMusica() {
-        /* TODO: Si el reproductor esta sonando, lo pauso. Si no, lo reproduzco */
+    fun PausarOSeguirMusica() {/* TODO: Si el reproductor esta sonando, lo pauso. Si no, lo reproduzco */
         if (!_exoPlayer.value!!.isPlaying) {
             _exoPlayer.value!!.play()
             _estaReproduciendo.value = true
@@ -229,13 +219,11 @@ class ScaffoldViewModel : ViewModel() {
             _exoPlayer.value!!.stop()
             _exoPlayer.value!!.clearMediaItems()
 
-            val mediaItem =
-                MediaItem.fromUri(
-                    obtenerRuta(
-                        context,
-                        canciones[indiceActual.value].first.first.first
-                    )
+            val mediaItem = MediaItem.fromUri(
+                obtenerRuta(
+                    context, canciones[indiceActual.value].first.first.first
                 )
+            )
             _exoPlayer.value!!.setMediaItem(mediaItem)
 
             _exoPlayer.value!!.prepare()
@@ -303,13 +291,11 @@ class ScaffoldViewModel : ViewModel() {
         _exoPlayer.value!!.stop()
         _exoPlayer.value!!.clearMediaItems()
 
-        val mediaItem =
-            MediaItem.fromUri(
-                obtenerRuta(
-                    context,
-                    cancionesAleatorias[_indiceActual.value].first.first.first
-                )
+        val mediaItem = MediaItem.fromUri(
+            obtenerRuta(
+                context, cancionesAleatorias[_indiceActual.value].first.first.first
             )
+        )
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         // Prepara el reproductor y activa el playWhenReady
@@ -323,9 +309,8 @@ class ScaffoldViewModel : ViewModel() {
 fun obtenerRuta(context: Context, @AnyRes resId: Int): Uri {
     val res: Resources = context.resources
     return Uri.parse(
-        ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + res.getResourcePackageName(resId)
-                + '/' + res.getResourceTypeName(resId)
-                + '/' + res.getResourceEntryName(resId)
+        ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + res.getResourcePackageName(resId) + '/' + res.getResourceTypeName(
+            resId
+        ) + '/' + res.getResourceEntryName(resId)
     )
 }
