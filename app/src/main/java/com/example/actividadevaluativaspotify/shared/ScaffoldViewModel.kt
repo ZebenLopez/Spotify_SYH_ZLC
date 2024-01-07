@@ -136,6 +136,7 @@ class ScaffoldViewModel : ViewModel() {
         _nombreAlbumActual.value = cancion.first.second
         _nombreCancionActual.value = cancion.first.first.second
         _imagenCancionActual.value = cancion.second
+        _estaReproduciendo.value = true
 
         val exoPlayerValue = _exoPlayer.value
 
@@ -298,7 +299,7 @@ class ScaffoldViewModel : ViewModel() {
 
     fun ReproducirCancionAleatoria(context: Context) {
 
-        println(cancionesAleatorias)
+        cancionesAleatorias = _canciones.value.shuffled()
 
         if (modoRepetir.value) {
 
