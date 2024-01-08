@@ -116,6 +116,7 @@ class ScaffoldViewModel : ViewModel() {
             _estaReproduciendo.value = true
         }
 
+
         if (_exoPlayer.value != null) {
             _exoPlayer.value!!.stop()
             _exoPlayer.value!!.clearMediaItems()
