@@ -98,7 +98,8 @@ class ScaffoldViewModel : ViewModel() {
         _exoPlayer.value!!.playWhenReady = true
     }
 
-    fun cargarCanciones( context: Context, canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
+    fun cargarCanciones(
+        context: Context, canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
     ) {
 
         _canciones.value = canciones
@@ -108,19 +109,21 @@ class ScaffoldViewModel : ViewModel() {
         _imagenCancionActual.value = (_canciones.value[indiceActual.value]).second
         _estaReproduciendo.value = true
 
-        if (_exoPlayer.value != null){
+        if (_exoPlayer.value != null) {
             _exoPlayer.value!!.stop()
             _exoPlayer.value!!.clearMediaItems()
 
-            val mediaItem = MediaItem.fromUri(obtenerRuta(context, _canciones.value[0].first.first.first))
+            val mediaItem =
+                MediaItem.fromUri(obtenerRuta(context, _canciones.value[0].first.first.first))
             _exoPlayer.value!!.setMediaItem(mediaItem)
 
             _exoPlayer.value!!.prepare()
             _exoPlayer.value!!.playWhenReady = true
-        }else{
+        } else {
             crearExoPlayer(context)
 
-            val mediaItem = MediaItem.fromUri(obtenerRuta(context, _canciones.value[0].first.first.first))
+            val mediaItem =
+                MediaItem.fromUri(obtenerRuta(context, _canciones.value[0].first.first.first))
             _exoPlayer.value!!.setMediaItem(mediaItem)
 
             _exoPlayer.value!!.prepare()
@@ -166,11 +169,20 @@ class ScaffoldViewModel : ViewModel() {
     }
 
     fun hacerSonarMusica(context: Context) {
+        _exoPlayer.value!!.stop()
+        _exoPlayer.value!!.clearMediaItems()
+        _exoPlayer.value!!.prepare()
+
         _nombreAlbumActual.value = _canciones.value[indiceActual.value].first.second
         _nombreCancionActual.value = _canciones.value[indiceActual.value].first.first.second
         _imagenCancionActual.value = (_canciones.value[indiceActual.value]).second
 
-        val mediaItem = MediaItem.fromUri(obtenerRuta(context, _canciones.value[indiceActual.value].first.first.first))
+        val mediaItem = MediaItem.fromUri(
+            obtenerRuta(
+                context,
+                _canciones.value[indiceActual.value].first.first.first
+            )
+        )
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         _exoPlayer.value!!.playWhenReady = false
@@ -278,7 +290,12 @@ class ScaffoldViewModel : ViewModel() {
         _exoPlayer.value!!.clearMediaItems()
 
         val mediaItem =
-            MediaItem.fromUri(obtenerRuta(context, _canciones.value[indiceActual.value].first.first.first))
+            MediaItem.fromUri(
+                obtenerRuta(
+                    context,
+                    _canciones.value[indiceActual.value].first.first.first
+                )
+            )
         _exoPlayer.value!!.setMediaItem(mediaItem)
 
         _exoPlayer.value!!.prepare()
