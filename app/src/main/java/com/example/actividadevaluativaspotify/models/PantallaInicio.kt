@@ -3,6 +3,7 @@ package com.example.actividadevaluativaspotify.models
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,20 +53,32 @@ fun PantallaInicio(viewModelScaffold: ScaffoldViewModel) {
         ) {
 
             Spacer(modifier = Modifier.height(5.dp))
-            LazyColumn(Modifier.height(200.dp)) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Todas las Canciones",
+                    fontSize = 32.sp,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.Center),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            LazyColumn(Modifier.height(330.dp)) {
                 persistenceViewModel.allsongs.forEach() {
                     item {
                         CardPlaylist(it, viewModelScaffold)
                     }
                 }
             }
-            Text(
-                text = "Tus mejores Playlist",
-                fontSize = 32.sp,
-                color = Color.White,
-                modifier = Modifier.padding(10.dp),
-                fontWeight = FontWeight.Bold
-            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Tus mejores Playlist",
+                    fontSize = 32.sp,
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.Center),
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Row {
                 cardsGrandes(titulo = "Canciones guapardas", imagen = R.drawable.bbo, list = persistenceViewModel.songs, viewModelScaffold)
                 cardsGrandes(titulo = "Canciones meme", imagen = R.drawable.bobesponja, list = persistenceViewModel.funnysongs, viewModelScaffold)
