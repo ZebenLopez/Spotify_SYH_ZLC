@@ -101,13 +101,20 @@ class ScaffoldViewModel : ViewModel() {
     fun cargarCanciones(
         context: Context, canciones: List<Pair<Pair<Pair<Int, String>, String>, Int>>
     ) {
-
         _canciones.value = canciones
 
-        _nombreAlbumActual.value = _canciones.value[indiceActual.value].first.second
-        _nombreCancionActual.value = _canciones.value[indiceActual.value].first.first.second
-        _imagenCancionActual.value = (_canciones.value[indiceActual.value]).second
-        _estaReproduciendo.value = true
+        if (indiceActual.value >= 0 && indiceActual.value < _canciones.value.size) {
+            _nombreAlbumActual.value = _canciones.value[indiceActual.value].first.second
+            _nombreCancionActual.value = _canciones.value[indiceActual.value].first.first.second
+            _imagenCancionActual.value = (_canciones.value[indiceActual.value]).second
+            _estaReproduciendo.value = true
+
+        } else {
+            _nombreAlbumActual.value = _canciones.value[0].first.second
+            _nombreCancionActual.value = _canciones.value[0].first.first.second
+            _imagenCancionActual.value = (_canciones.value[0]).second
+            _estaReproduciendo.value = true
+        }
 
         if (_exoPlayer.value != null) {
             _exoPlayer.value!!.stop()
@@ -120,6 +127,10 @@ class ScaffoldViewModel : ViewModel() {
             _exoPlayer.value!!.prepare()
             _exoPlayer.value!!.playWhenReady = true
         } else {
+            _exoPlayer.value!!.stop()
+            _exoPlayer.value!!.clearMediaItems()
+
+
             crearExoPlayer(context)
 
             val mediaItem =
